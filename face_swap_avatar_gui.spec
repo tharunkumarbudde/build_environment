@@ -1,10 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
-PyInstaller spec file for building Face Swap Avatar GUI as a clean onedir bundle.
+PyInstaller spec file for building Face Swap Avatar GUI as Windows .exe directory package.
+Forces physical inclusion of module paths to bypass empty cloud hook issues.
 Run: pyinstaller face_swap_avatar_gui.spec
 """
 
+import os
+import importlib
 from PyInstaller.utils.hooks import collect_submodules
+
+try:
+    cv2_spec = importlib.util.find_spec('cv2')
+    cv2_dir = os.path.dirname(cv2_spec.origin) if cv2_spec else None
+except Exception:
+    cv2_dir = None
 
 insightface_imports = collect_submodules('insightface')
 pyvc_imports = collect_submodules('pyvirtualcam')
@@ -19,6 +28,9 @@ all_datas = [
     ('avatars', 'avatars'),
     ('settings.json', '.'),
 ]
+
+if cv2_dir and os.path.exists(cv2_dir):
+    all_datas.append((cv2_dir, 'cv2'))
 
 a = Analysis(
     ['face_swap_avatar_gui.py'],
