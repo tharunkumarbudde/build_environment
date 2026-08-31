@@ -4,29 +4,36 @@ PyInstaller spec file for building Face Swap Avatar GUI as Windows .exe
 Run: pyinstaller face_swap_avatar_gui.spec
 """
 
+from PyInstaller.utils.hooks import collect_submodules, collect_data_files, collect_dynamic_libs
+
+cv2_imports = collect_submodules('cv2')
+insightface_imports = collect_submodules('insightface')
+pyvc_imports = collect_submodules('pyvirtualcam')
+qt_imports = collect_submodules('PyQt5')
+
+hidden_imports = (
+    ['numpy', 'onnxruntime', 'psutil', 'cv2']
+    + cv2_imports
+    + insightface_imports
+    + pyvc_imports
+    + qt_imports
+)
+
+all_datas = [('avatars', 'avatars'), ('settings.json', '.')]
+all_datas += collect_data_files('cv2')
+all_datas += collect_data_files('PyQt5')
+
+all_binaries = []
+all_binaries += collect_dynamic_libs('cv2')
+all_binaries += collect_dynamic_libs('onnxruntime')
+
+
 a = Analysis(
     ['face_swap_avatar_gui.py'],
     pathex=[],
-    binaries=[],
-    datas=[
-        # Include avatar images if they exist
-        ('avatars', 'avatars'),
-        ('settings.json', '.'),
-    ],
-    hiddenimports=[
-        'insightface',
-        'insightface.app',
-        'insightface.model_zoo',
-        'onnxruntime',
-        'cv2',
-        'numpy',
-        'pyvirtualcam',
-        'PyQt5',
-        'PyQt5.QtCore',
-        'PyQt5.QtGui',
-        'PyQt5.QtWidgets',
-        'psutil',
-    ],
+    binaries=all_binaries,
+    datas=all_datas,
+    hiddenimports=hidden_imports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
