@@ -1,0 +1,13 @@
+{
+  "model_path": "inswapper_128.onnx",
+  "avatar_dir": "avatars",
+  "camera_index": 0,
+  "target_fps": 30,
+  "detection_size": [640, 640],
+  "pose_filter_alpha": 0.35,
+  "enable_preview": true,
+  "gpu_enabled": true,
+  "face_detection_confidence": 0.5,
+  "use_largest_face": true,
+  "enable_pose_smoothing": true
+}

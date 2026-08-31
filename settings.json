@@ -1,0 +1,11 @@
+{
+  "camera_index": 0,
+  "target_fps": 30,
+  "pose_filter_alpha": 0.35,
+  "gpu_enabled": true,
+  "enable_preview": false,
+  "auto_detect": true,
+  "auto_start": true,
+  "minimize_to_tray": true,
+  "avatar_dir": "avatars"
+}

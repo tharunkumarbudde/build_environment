@@ -1,0 +1,56 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-win:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        shell: powershell
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Prepare app assets
+        shell: powershell
+        run: |
+          if (-not (Test-Path "avatars")) { New-Item -ItemType Directory -Path "avatars" | Out-Null }
+          if (-not (Test-Path "settings.json")) {
+            @{
+              camera_index = 0
+              target_fps = 30
+              pose_filter_alpha = 0.35
+              gpu_enabled = $true
+              enable_preview = $false
+              auto_detect = $true
+              auto_start = $true
+              minimize_to_tray = $true
+              avatar_dir = "avatars"
+            } | ConvertTo-Json | Set-Content -Path "settings.json"
+          }
+
+      - name: Build executable
+        shell: cmd
+        run: |
+          pyinstaller face_swap_avatar_gui.spec
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FaceSwapAvatar-Windows
+          path: dist/FaceSwapAvatar/
+          if-no-files-found: error
